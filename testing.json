@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "bryllup-469007",
+  "private_key_id": "e835a600080590f757967b3eccadeef7f5e73820",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC1UruoFT8zhabS\n2m4/hc00yJHTYNa+NX7efp+Z6oRWTVSLVGHNsn2Lcz/1JdBeQYZRKNcyAS7q4+tQ\nszv9s3jsXIpLPLiayXxZL0kEoTejgD1SZhc3Uom5XgOaL7OhFnp701+lbdZ3xNq4\nCvzvsLgrW8nN5u83/bcMGS1Za569jrZFuAaJJ9umw07CrKFhgtx29iYU0imxdPY4\njUkMn6A77Wrb4Y/0pBQDIZMypTk3PD3CRt+bVy3ig1yDnWwvTqGsdWKfolDRZzXz\nMqS172eXYoMsByoea9zjIERGshAr+/1ykxWyeKvGgJ9ZKnwCqsh0PBMGexAIAIJY\n1qh+AE/LAgMBAAECggEAAiwevcRHZhAfWrOtkiBBwEn43p3wj1snt8sE5tIASje8\noBC05+3QAugwvM36Vu6/s7WNYnbQ1OqXH/fjFkaHV9mXTzsdK77nOPr6i84nUv5P\nKG9lrs7T1z8w7tt3HPfJJDZOP+FMKlIsRqaHDOjCmW5iQWUXZPCADWqNzbOe4BQn\nkqtA32YXZo1CvZ2RVXxuybdaRIVBaNTQwiFzxa/23dxwAIEu3Ks/avyyRpX4WND/\n3IPfqTWwXXvwFYREuUGrCgITXNjb7GYwzRFkK97gtUbaddJpxCHOI+3BV7Ie2h6p\ntKQfhAGRxWEsnmCPR8Mvhdg7hes1mwJAV9Z1dcWhHQKBgQD6Y/VjIxdSru6tIc17\nKtyN7C2XyddEQLrimD+myZT14jg3AiO3jyBT/dGhvk8QB0yJajFgHrSFPLncYyZS\nVXOBSMvN/yebQacLb6K4h1IjNAT+4z1JjKl8SRN/4T2O+taNA7xWv+hu4dFCr1YF\n9vp0wBe+iKpz76HCZskTGxY6vwKBgQC5YqjCKQ0tTXk+R30waXroYxGYYyd6hgJt\n9VUcNjHF9UubxOxLwZYymn7A8daXIljL0IkT+S3o/DL0Nr0fVM90nVXGUdSAOSX9\nb3Kb8aC4I2LRt6GHDh9R9kzo4AGA81sThQLto3g8zR5vctVHeqn8GKTH3LoazSeW\ndFGFcY6p9QKBgQDL+lR0X6jnXcToW+o2VXN5VpbJ2c85NfZJFDh+Wie0q4aaIW8R\nYVK3ucVmG0/zQc7y/wScRkdPZ2oOBOO6HQzMnI4TEbKlQzWfFmGcK/kY3o7XSi2q\nViHYMvvkqIxqhyPzmsB6dzoV4naD+ax9jXb5V2fAeztI2UWQxgU2QFG6pwKBgH91\ngLf1x5SFNr4GIuGdNB8AtkFCswr/hj4ZtkmuTSxgyXowu5IeaGkkZc+8tqC0wb5o\nA0dTRChy9YmI9SDMi9IOtsGi02rRX/hOnsrvJ2RTGAc+rPURVaFhqWFXWlFRgCX8\nhpXilbGgCbPwjQkXIjYsr2amsOHqebRtBvurpr3dAoGAAl1TgWgp4HIYIBzJflWt\nZF6ejt16Oje4uKO5sJi3LtWz1l+yPUROvqZeS8utjBOtBzIl1vpX78qYijT5S0dp\nP6mPGGQdtilw87eZJC+hbnE7Tu0DU2EjmCYLcXX0qoAS7rZ927fZmVfivWn5rQv4\nV1mAJR4c/rcFXeFgA4ue/6M=\n-----END PRIVATE KEY-----\n",
+  "client_email": "bryllupuploader@bryllup-469007.iam.gserviceaccount.com",
+  "client_id": "115174796549334331714",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/bryllupuploader%40bryllup-469007.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

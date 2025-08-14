@@ -26,8 +26,6 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 import io
 
-# ID of the Drive folder where files will be uploaded
-DRIVE_FOLDER_ID = "1zzAZH9xwyUe1D-VykZ-xE5RWCkkRYbSK?dmr=1&ec=wgc-drive-globalnav-goto"
 
 import io
 from google.oauth2 import service_account
@@ -164,9 +162,24 @@ def process_and_save(uploaded_file):
         return f"Fejl ved {uploaded_file.name}: {e}"
 
 if uploaded_files:
-    for file in uploaded_files:  # <-- loop over each file
-        upload_to_drive(file)
-    #upload_to_drive(uploaded_files)
+    #for file in uploaded_files:  # <-- loop over each file
+    #    upload_to_drive(file)
+    creds = ServiceAccountCredentials.from_json_keyfile_name("testing.json", scope)
+    gc = gspread.authorize(creds)
+    
+    # Access Drive via PyDrive (optional) or Google Drive API
+    from pydrive.auth import GoogleAuth
+    from pydrive.drive import GoogleDrive
+
+    gauth = GoogleAuth()
+    gauth.credentials = creds
+    drive = GoogleDrive(gauth)
+
+    # Upload the file
+    file_drive = drive.CreateFile({'title': uploaded_file.name, 
+                                   'parents': [{'id': DRIVER_FOLDER_ID}]})
+    file_drive.SetContentString(uploaded_file.getvalue().decode("latin1"))
+    file_drive.Upload()
 
     st.success("Dine billeder er gemt! 📷")
     st.balloons()
