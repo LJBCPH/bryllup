@@ -57,7 +57,7 @@ def upload_to_drive(file):
 
         file_metadata = {
             'name': file.name,
-            'parents': [DRIVE_FOLDER_ID]
+            'parents': [{'id': DRIVE_FOLDER_ID}]
         }
 
         media = MediaIoBaseUpload(io.BytesIO(file.read()), mimetype=file.type)
@@ -162,24 +162,24 @@ def process_and_save(uploaded_file):
         return f"Fejl ved {uploaded_file.name}: {e}"
 
 if uploaded_files:
-    #for file in uploaded_files:  # <-- loop over each file
-    #    upload_to_drive(file)
-    creds = ServiceAccountCredentials.from_json_keyfile_name("testing.json", scope)
-    gc = gspread.authorize(creds)
+    for file in uploaded_files:  # <-- loop over each file
+        upload_to_drive(file)
+    #creds = ServiceAccountCredentials.from_json_keyfile_name("testing.json", scope)
+    #gc = gspread.authorize(creds)
     
     # Access Drive via PyDrive (optional) or Google Drive API
-    from pydrive.auth import GoogleAuth
-    from pydrive.drive import GoogleDrive
+    #from pydrive.auth import GoogleAuth
+    #from pydrive.drive import GoogleDrive
 
-    gauth = GoogleAuth()
-    gauth.credentials = creds
-    drive = GoogleDrive(gauth)
+    #gauth = GoogleAuth()
+    #gauth.credentials = creds
+    #drive = GoogleDrive(gauth)
 
     # Upload the file
-    file_drive = drive.CreateFile({'title': uploaded_file.name, 
-                                   'parents': [{'id': DRIVER_FOLDER_ID}]})
-    file_drive.SetContentString(uploaded_file.getvalue().decode("latin1"))
-    file_drive.Upload()
+    #file_drive = drive.CreateFile({'title': uploaded_file.name, 
+    #                               'parents': [{'id': DRIVER_FOLDER_ID}]})
+    #file_drive.SetContentString(uploaded_file.getvalue().decode("latin1"))
+    #file_drive.Upload()
 
     st.success("Dine billeder er gemt! 📷")
     st.balloons()
