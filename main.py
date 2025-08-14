@@ -29,6 +29,42 @@ import io
 # ID of the Drive folder where files will be uploaded
 DRIVE_FOLDER_ID = "1zzAZH9xwyUe1D-VykZ-xE5RWCkkRYbSK?dmr=1&ec=wgc-drive-globalnav-goto"
 
+import io
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseUpload
+
+# Your folder ID (make sure the service account has access)
+DRIVE_FOLDER_ID = "1zzAZH9xwyUe1D-VykZ-xE5RWCkkRYbSK?dmr=1&ec=wgc-drive-globalnav-goto"
+
+# Load credentials from Streamlit secrets
+import streamlit as st
+SERVICE_ACCOUNT_INFO = st.secrets["SERVICE_ACCOUNT_INFO"]
+
+credentials = service_account.Credentials.from_service_account_info(
+    SERVICE_ACCOUNT_INFO,
+    scopes=["https://www.googleapis.com/auth/drive"]
+)
+
+service = build('drive', 'v3', credentials=credentials)
+
+# Create a test file in the folder
+file_metadata = {
+    'name': 'test_upload.txt',
+    'parents': [DRIVE_FOLDER_ID]
+}
+
+media = MediaIoBaseUpload(io.BytesIO(b"Hello from service account!"), mimetype='text/plain')
+
+file = service.files().create(
+    body=file_metadata,
+    media_body=media,
+    fields='id'
+).execute()
+
+st.write(f"Uploaded file ID: {file['id']}")
+
+
 def upload_to_drive(file):
     try:
         # Authenticate using service account from st.secrets
