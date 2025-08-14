@@ -48,7 +48,7 @@ credentials = service_account.Credentials.from_service_account_info(
 
 service = build('drive', 'v3', credentials=credentials)
 
-results = drive_service.files().list(
+results = service.files().list(
     q="'1zzAZH9xwyUe1D-VykZ-xE5RWCkkRYbSK' in parents",
     fields="files(id, name)"
 ).execute()
