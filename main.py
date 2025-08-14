@@ -48,30 +48,6 @@ credentials = service_account.Credentials.from_service_account_info(
 
 service = build('drive', 'v3', credentials=credentials)
 
-results = service.files().list(
-    q="'1zzAZH9xwyUe1D-VykZ-xE5RWCkkRYbSK' in parents",
-    fields="files(id, name)"
-).execute()
-
-print(results.get("files", []))
-
-# Create a test file in the folder
-file_metadata = {
-    'name': 'test_upload.txt',
-    'parents': [DRIVE_FOLDER_ID]
-}
-
-media = MediaIoBaseUpload(io.BytesIO(b"Hello from service account!"), mimetype='text/plain')
-
-file = service.files().create(
-    body=file_metadata,
-    media_body=media,
-    fields='id'
-).execute()
-
-st.write(f"Uploaded file ID: {file['id']}")
-
-
 def upload_to_drive(file):
     try:
         # Authenticate using service account from st.secrets
