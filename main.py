@@ -181,9 +181,12 @@ def process_and_save(uploaded_file):
         return f"Fejl ved {uploaded_file.name}: {e}"
 
 if uploaded_files:
-    for file in uploaded_files:  # <-- loop over each file
-        st.markdown(file)
-        upload_to_drive(file)
+    #for file in uploaded_files:  # <-- loop over each file
+        #st.markdown(file)
+        #upload_to_drive(file)
+    with ThreadPoolExecutor() as executor:
+        results = list(executor.map(process_and_save, uploaded_files))
+
     #creds = ServiceAccountCredentials.from_json_keyfile_name("testing.json", scope)
     #gc = gspread.authorize(creds)
     
