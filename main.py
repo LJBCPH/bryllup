@@ -5,6 +5,14 @@ import random
 import uuid
 import time
 
+
+import dropbox
+from io import BytesIO
+
+# Your Dropbox access token
+DROPBOX_TOKEN = st.secrets["my_app"]["sec"]
+dbx = dropbox.Dropbox(DROPBOX_TOKEN)
+
 # App settings
 UPLOAD_DIR = "uploaded_photos"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -109,30 +117,32 @@ def process_and_save(uploaded_file):
         return f"Fejl ved {uploaded_file.name}: {e}"
 
 if uploaded_files:
-    with ThreadPoolExecutor() as executor:
-        results = list(executor.map(process_and_save, uploaded_files))
+    #with ThreadPoolExecutor() as executor:
+    #    results = list(executor.map(process_and_save, uploaded_files))
+    for uploaded_file in uploaded_files:
+        file_name = uploaded_file.name
+        file_bytes = BytesIO(uploaded_file.read())
 
+        # Upload to Dropbox root folder
+        dbx.files_upload(
+            file_bytes.getvalue(),
+            f"/{file_name}",
+            mode=dropbox.files.WriteMode.overwrite
+        )
+
+        st.success(f"Uploaded {file_name} to Dropbox!")
+
+        # Create public link
+        try:
+            link = dbx.sharing_create_shared_link_with_settings(f"/{file_name}").url
+        except dropbox.exceptions.ApiError:
+            # If link already exists, get it
+            link = dbx.sharing_list_shared_links(f"/{file_name}").links[0].url
+
+        st.write(f"[View {file_name}]({link})")
     st.success("Dine billeder er gemt! 📷")
     st.balloons()
     st.session_state.uploader_key = str(uuid.uuid4())
     st.rerun()
 else:
     st.markdown("⬆️ Brug uploaderen ovenover!")
-
-# Optional photo preview
-with st.expander("📁 Se nogle billeder fra aftenen her!"):
-    photos = os.listdir(UPLOAD_DIR)
-    sample_photos = random.sample(photos, min(len(photos), 5))
-    if photos:
-        for photo in sorted(sample_photos, reverse=True):
-            st.image(os.path.join(UPLOAD_DIR, photo), use_container_width=True)
-    else:
-        st.info("Ingen billeder endnu!")
-
-guess = st.text_input(
-    label="Fundet?", value="SLFLAG{...}"
-)
-if flag==guess:
-    st.write(f"Uhhhhhhhhhhhhh {flag=} og {guess=}")
-else:
-    st.write(f"Buuuuuuuuuuh {guess=} no gucci")
