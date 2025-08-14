@@ -7,18 +7,34 @@ import time
 import io
 
 
-CLIENT_SECRETS_FILE = "cil.json"  # from Google Cloud Console
+from google_auth_oauthlib.flow import Flow
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaInMemoryUpload
+from google.oauth2.credentials import Credentials
+import os
+import io
+
+# Step 1: Build client config from st.secrets
+client_config = {
+    "web": {
+        "client_id": st.secrets["web"]["client_id"],
+        "project_id": st.secrets["web"]["project_id"],
+        "auth_uri": st.secrets["web"]["auth_uri"],
+        "token_uri": st.secrets["web"]["token_uri"],
+        "auth_provider_x509_cert_url": st.secrets["web"]["auth_provider_x509_cert_url"],
+        "client_secret": st.secrets["web"]["client_secret"],
+        "redirect_uris": st.secrets["web"]["redirect_uris"],
+        "javascript_origins": st.secrets["web"]["javascript_origins"]
+    }
+}
+
 SCOPES = ["https://www.googleapis.com/auth/drive.file"]
 
-# App settings
-UPLOAD_DIR = "uploaded_photos"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-
 if "credentials" not in st.session_state:
-    flow = Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, scopes=SCOPES)
-    flow.redirect_uri = "https://bryllup-fotoupload.streamlit.app/"  # Change for Streamlit Cloud
-    auth_url, _ = flow.authorization_url(prompt="consent")
-    st.write(f"[Click here to authorize Google Drive]({auth_url})")
+    flow = Flow.from_client_config(client_config, scopes=SCOPES)
+    flow.redirect_uri = st.secrets["web"]["redirect_uris"][0]  # Cloud redirect URI
+    auth_url, _ = flow.authorization_url(prompt="consent", access_type="offline")
+    st.markdown(f"[Authorize Google Drive access]({auth_url})")
 else:
     creds = Credentials.from_authorized_user_info(st.session_state["credentials"], SCOPES)
     service = build("drive", "v3", credentials=creds)
