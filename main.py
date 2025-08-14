@@ -163,6 +163,7 @@ def process_and_save(uploaded_file):
 
 if uploaded_files:
     for file in uploaded_files:  # <-- loop over each file
+        st.markdown(file)
         upload_to_drive(file)
     #creds = ServiceAccountCredentials.from_json_keyfile_name("testing.json", scope)
     #gc = gspread.authorize(creds)
