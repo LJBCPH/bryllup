@@ -1,148 +1,56 @@
 import streamlit as st
-from datetime import datetime
-import os
-import random
-import uuid
-import time
-
-
 import dropbox
 from io import BytesIO
+import re
+import unicodedata
+import datetime
 
-# Your Dropbox access token
+# Store your Dropbox token in Streamlit secrets in production
 DROPBOX_TOKEN = st.secrets["my_app"]["sec"]
 dbx = dropbox.Dropbox(DROPBOX_TOKEN)
 
-# App settings
-UPLOAD_DIR = "uploaded_photos"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+# Main uploads folder name
+MAIN_FOLDER = "/bryllup"
 
-st.set_page_config(
-    page_title="💍 Vores bryllup",
-    page_icon="💒",
-    layout="centered",
-)
+def clean_filename(filename):
+    """Remove invalid characters for Dropbox paths."""
+    nfkd = unicodedata.normalize("NFKD", filename)
+    filename = "".join(c for c in nfkd if not unicodedata.combining(c))
+    filename = re.sub(r'[<>:"/\\|?*]', "", filename)
+    filename = filename.strip()
+    return filename
 
-# Flag
-with open('flag.txt', 'r') as file:
-    # Read the entire content of the file
-    flag = file.read()
-st.markdown(f"""
-<span style="position:absolute; left:-10000px; font-size:1px; user-select:text;">
-{flag}
-</span>
-""", unsafe_allow_html=True)
-
-
-# Header
-st.markdown("<h1 style='text-align: center; color: #8b0000;'>Sandras og Lucas' Bryllup</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center;'>Del dine billeder fra dagen/aftenen med os!</p>", unsafe_allow_html=True)
-
-st.markdown("---")
-
-if "uploader_key" not in st.session_state:
-    st.session_state.uploader_key = str(uuid.uuid4())
+st.title("Upload multiple images to Dropbox")
 
 uploaded_files = st.file_uploader(
-    "Vælg billede(r) som du vil dele med os",
-    type=["jpg", "jpeg", "png"],
-    accept_multiple_files=True,
-    key=st.session_state.uploader_key
+    "Choose images",
+    type=["jpg", "png", "jpeg"],
+    accept_multiple_files=True
 )
 
-from PIL import Image, ExifTags
-
-def save_image_with_rotation_handling(uploaded_file, save_path):
-    try:
-        image = Image.open(uploaded_file)
-        try:
-            exif = image._getexif()
-            if exif is not None:
-                orientation_key = next(
-                    (k for k, v in ExifTags.TAGS.items() if v == 'Orientation'), None
-                )
-                if orientation_key and orientation_key in exif:
-                    orientation = exif[orientation_key]
-                    if orientation == 3:
-                        image = image.rotate(180, expand=True)
-                    elif orientation == 6:
-                        image = image.rotate(270, expand=True)
-                    elif orientation == 8:
-                        image = image.rotate(90, expand=True)
-        except Exception:
-            pass
-        image.save(save_path)
-    except Exception as e:
-        st.error(f"Et billede kunne ikke gemmes {uploaded_file.name}: {e}")
-
-
-# if uploaded_files:
-#     st.success("TAK! 💕")
-#
-#     for file in uploaded_files:
-#         # print(uploaded_files)
-#         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-#         save_path = os.path.join(UPLOAD_DIR, f"{timestamp}_{file.name}")
-#         save_image_with_rotation_handling(file, save_path)
-#
-#     st.toast(f"Dine billeder er gemt!", icon="📷")
-#     #uploaded_files=None
-#
-#     st.markdown("### 🥰 Dine billeder er blevet gemt hos os!")
-#     st.balloons()
-#     #st.session_state.upload_files = None
-#     time.sleep(5)
-#     st.session_state.uploader_key=str(uuid.uuid4())
-#     st.rerun()
-# else:
-#     st.markdown("⬆️ Brug uploaderen ovenover!")
-
-from PIL import Image, ImageOps
-from concurrent.futures import ThreadPoolExecutor
-
-MAX_WIDTH = 2048
-JPEG_QUALITY = 85
-
-def process_and_save(uploaded_file):
-    try:
-        img = Image.open(uploaded_file)
-        img = ImageOps.exif_transpose(img)  # Auto-rotate using EXIF
-        if img.width > MAX_WIDTH:
-            img.thumbnail((MAX_WIDTH, MAX_WIDTH))  # Maintain aspect ratio
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        save_path = os.path.join(UPLOAD_DIR, f"{timestamp}_{uploaded_file.name}")
-        img.save(save_path, "JPEG", quality=JPEG_QUALITY, optimize=True)
-        return uploaded_file.name
-    except Exception as e:
-        return f"Fejl ved {uploaded_file.name}: {e}"
-
 if uploaded_files:
-    #with ThreadPoolExecutor() as executor:
-    #    results = list(executor.map(process_and_save, uploaded_files))
+    # Create a unique subfolder for this batch
+    timestamp_folder = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
     for uploaded_file in uploaded_files:
-        file_name = uploaded_file.name
+        file_name = clean_filename(uploaded_file.name)
         file_bytes = BytesIO(uploaded_file.read())
 
-        # Upload to Dropbox root folder
+        # Full path: /streamlit_uploads/2025-08-14_12-30-00/filename.jpg
+        path = f"{MAIN_FOLDER}/{timestamp_folder}/{file_name}"
+
         dbx.files_upload(
             file_bytes.getvalue(),
-            f"/{file_name}",
+            path,
             mode=dropbox.files.WriteMode.overwrite
         )
 
         st.success(f"Uploaded {file_name} to Dropbox!")
 
-        # Create public link
+        # Public link
         try:
-            link = dbx.sharing_create_shared_link_with_settings(f"/{file_name}").url
+            link = dbx.sharing_create_shared_link_with_settings(path).url
         except dropbox.exceptions.ApiError:
-            # If link already exists, get it
-            link = dbx.sharing_list_shared_links(f"/{file_name}").links[0].url
+            link = dbx.sharing_list_shared_links(path).links[0].url
 
         st.write(f"[View {file_name}]({link})")
-    st.success("Dine billeder er gemt! 📷")
-    st.balloons()
-    st.session_state.uploader_key = str(uuid.uuid4())
-    st.rerun()
-else:
-    st.markdown("⬆️ Brug uploaderen ovenover!")
