@@ -35,7 +35,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 
 # Your folder ID (make sure the service account has access)
-DRIVE_FOLDER_ID = "1zzAZH9xwyUe1D-VykZ-xE5RWCkkRYbSK?dmr=1&ec=wgc-drive-globalnav-goto"
+DRIVE_FOLDER_ID = "1zzAZH9xwyUe1D-VykZ-xE5RWCkkRYbSK"
 
 # Load credentials from Streamlit secrets
 import streamlit as st
