@@ -48,6 +48,25 @@ service = build('drive', 'v3', credentials=credentials)
 
 def upload_to_drive(file):
     try:
+        credentials = service_account.Credentials.from_service_account_info(
+            st.secrets["SERVICE_ACCOUNT_INFO"],
+            scopes=["https://www.googleapis.com/auth/drive"]
+        )
+        service = build('drive', 'v3', credentials=credentials)
+
+        # Create a dummy file
+        file_metadata = {
+            'name': 'dummy_test.txt',
+            'parents': [{'id': DRIVE_FOLDER_ID}]
+        }
+        media = MediaIoBaseUpload(io.BytesIO(b'This is a test file from Streamlit!'),
+                                  mimetype='text/plain')
+
+        file = service.files().create(
+            body=file_metadata,
+            media_body=media,
+            fields='id'
+        ).execute()
         # Authenticate using service account from st.secrets
         credentials = service_account.Credentials.from_service_account_info(
             st.secrets["SERVICE_ACCOUNT_INFO"],
