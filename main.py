@@ -7,7 +7,7 @@ import time
 import io
 
 
-CLIENT_SECRETS_FILE = "credentials.json"  # from Google Cloud Console
+CLIENT_SECRETS_FILE = "cil.json"  # from Google Cloud Console
 SCOPES = ["https://www.googleapis.com/auth/drive.file"]
 
 # App settings
