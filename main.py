@@ -27,27 +27,24 @@ from googleapiclient.http import MediaIoBaseUpload
 import io
 
 # ID of the Drive folder where files will be uploaded
-DRIVE_FOLDER_ID = "YOUR_FOLDER_ID_HERE"
+DRIVE_FOLDER_ID = "1zzAZH9xwyUe1D-VykZ-xE5RWCkkRYbSK?dmr=1&ec=wgc-drive-globalnav-goto"
 
 def upload_to_drive(file):
     try:
-        # Authenticate using service account stored in st.secrets
+        # Authenticate using service account from st.secrets
         credentials = service_account.Credentials.from_service_account_info(
             st.secrets["SERVICE_ACCOUNT_INFO"],
             scopes=["https://www.googleapis.com/auth/drive"]
         )
         service = build('drive', 'v3', credentials=credentials)
 
-        # File metadata
         file_metadata = {
             'name': file.name,
             'parents': [DRIVE_FOLDER_ID]
         }
 
-        # Media upload
         media = MediaIoBaseUpload(io.BytesIO(file.read()), mimetype=file.type)
 
-        # Upload
         service.files().create(
             body=file_metadata,
             media_body=media,
@@ -55,7 +52,7 @@ def upload_to_drive(file):
         ).execute()
         return True
     except Exception as e:
-        st.error(f"Error uploading file: {e}")
+        st.error(f"Error uploading {file.name}: {e}")
         return False
         
      
@@ -158,14 +155,14 @@ else:
     st.markdown("⬆️ Brug uploaderen ovenover!")
 
 # Optional photo preview
-with st.expander("📁 Se nogle billeder fra aftenen her!"):
-    photos = os.listdir(UPLOAD_DIR)
-    sample_photos = random.sample(photos, min(len(photos), 5))
-    if photos:
-        for photo in sorted(sample_photos, reverse=True):
-            st.image(os.path.join(UPLOAD_DIR, photo), use_container_width=True)
-    else:
-        st.info("Ingen billeder endnu!")
+#with st.expander("📁 Se nogle billeder fra aftenen her!"):
+#    photos = os.listdir(UPLOAD_DIR)
+#    sample_photos = random.sample(photos, min(len(photos), 5))
+#    if photos:
+#        for photo in sorted(sample_photos, reverse=True):
+#            st.image(os.path.join(UPLOAD_DIR, photo), use_container_width=True)
+#    else:
+#        st.info("Ingen billeder endnu!")
 #
 #guess = st.text_input(
 #    label="Fundet?", value="SLFLAG{...}"
