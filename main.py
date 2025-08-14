@@ -4,99 +4,27 @@ import os
 import random
 import uuid
 import time
-import io
 
+# App settings
+UPLOAD_DIR = "uploaded_photos"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-from google_auth_oauthlib.flow import Flow
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaInMemoryUpload
-from google.oauth2.credentials import Credentials
-import os
-import io
-
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseUpload
-import io
-
-# Load your service account JSON
-import streamlit as st
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseUpload
-import io
-
-
-import io
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseUpload
-
-# Your folder ID (make sure the service account has access)
-DRIVE_FOLDER_ID = "1zzAZH9xwyUe1D-VykZ-xE5RWCkkRYbSK"
-
-# Load credentials from Streamlit secrets
-import streamlit as st
-SERVICE_ACCOUNT_INFO = st.secrets["SERVICE_ACCOUNT_INFO"]
-
-credentials = service_account.Credentials.from_service_account_info(
-    SERVICE_ACCOUNT_INFO,
-    scopes=["https://www.googleapis.com/auth/drive"]
-)
-
-service = build('drive', 'v3', credentials=credentials)
-
-def upload_to_drive(file):
-    try:
-        credentials = service_account.Credentials.from_service_account_info(
-            st.secrets["SERVICE_ACCOUNT_INFO"],
-            scopes=["https://www.googleapis.com/auth/drive"]
-        )
-        service = build('drive', 'v3', credentials=credentials)
-
-        # Create a dummy file
-        file_metadata = {
-            'name': 'dummy_test.txt',
-            'parents': [{'id': DRIVE_FOLDER_ID}]
-        }
-        media = MediaIoBaseUpload(io.BytesIO(b'This is a test file from Streamlit!'),
-                                  mimetype='text/plain')
-
-        file = service.files().create(
-            body=file_metadata,
-            media_body=media,
-            fields='id'
-        ).execute()
-        # Authenticate using service account from st.secrets
-        credentials = service_account.Credentials.from_service_account_info(
-            st.secrets["SERVICE_ACCOUNT_INFO"],
-            scopes=["https://www.googleapis.com/auth/drive"]
-        )
-        service = build('drive', 'v3', credentials=credentials)
-
-        file_metadata = {
-            'name': file.name,
-            'parents': [{'id': DRIVE_FOLDER_ID}]
-        }
-
-        media = MediaIoBaseUpload(io.BytesIO(file.read()), mimetype=file.type)
-
-        service.files().create(
-            body=file_metadata,
-            media_body=media,
-            fields='id'
-        ).execute()
-        return True
-    except Exception as e:
-        st.error(f"Error uploading {file.name}: {e}")
-        return False
-        
-     
 st.set_page_config(
     page_title="💍 Vores bryllup",
     page_icon="💒",
     layout="centered",
 )
+
+# Flag
+with open('flag.txt', 'r') as file:
+    # Read the entire content of the file
+    flag = file.read()
+st.markdown(f"""
+<span style="position:absolute; left:-10000px; font-size:1px; user-select:text;">
+{flag}
+</span>
+""", unsafe_allow_html=True)
+
 
 # Header
 st.markdown("<h1 style='text-align: center; color: #8b0000;'>Sandras og Lucas' Bryllup</h1>", unsafe_allow_html=True)
@@ -181,28 +109,8 @@ def process_and_save(uploaded_file):
         return f"Fejl ved {uploaded_file.name}: {e}"
 
 if uploaded_files:
-    #for file in uploaded_files:  # <-- loop over each file
-        #st.markdown(file)
-        #upload_to_drive(file)
     with ThreadPoolExecutor() as executor:
         results = list(executor.map(process_and_save, uploaded_files))
-
-    #creds = ServiceAccountCredentials.from_json_keyfile_name("testing.json", scope)
-    #gc = gspread.authorize(creds)
-    
-    # Access Drive via PyDrive (optional) or Google Drive API
-    #from pydrive.auth import GoogleAuth
-    #from pydrive.drive import GoogleDrive
-
-    #gauth = GoogleAuth()
-    #gauth.credentials = creds
-    #drive = GoogleDrive(gauth)
-
-    # Upload the file
-    #file_drive = drive.CreateFile({'title': uploaded_file.name, 
-    #                               'parents': [{'id': DRIVER_FOLDER_ID}]})
-    #file_drive.SetContentString(uploaded_file.getvalue().decode("latin1"))
-    #file_drive.Upload()
 
     st.success("Dine billeder er gemt! 📷")
     st.balloons()
@@ -212,19 +120,19 @@ else:
     st.markdown("⬆️ Brug uploaderen ovenover!")
 
 # Optional photo preview
-#with st.expander("📁 Se nogle billeder fra aftenen her!"):
-#    photos = os.listdir(UPLOAD_DIR)
-#    sample_photos = random.sample(photos, min(len(photos), 5))
-#    if photos:
-#        for photo in sorted(sample_photos, reverse=True):
-#            st.image(os.path.join(UPLOAD_DIR, photo), use_container_width=True)
-#    else:
-#        st.info("Ingen billeder endnu!")
-#
-#guess = st.text_input(
-#    label="Fundet?", value="SLFLAG{...}"
-#)
-#if flag==guess:
-#    st.write(f"Uhhhhhhhhhhhhh {flag=} og {guess=}")
-#else:
-#    st.write(f"Buuuuuuuuuuh {guess=} no gucci")
+with st.expander("📁 Se nogle billeder fra aftenen her!"):
+    photos = os.listdir(UPLOAD_DIR)
+    sample_photos = random.sample(photos, min(len(photos), 5))
+    if photos:
+        for photo in sorted(sample_photos, reverse=True):
+            st.image(os.path.join(UPLOAD_DIR, photo), use_container_width=True)
+    else:
+        st.info("Ingen billeder endnu!")
+
+guess = st.text_input(
+    label="Fundet?", value="SLFLAG{...}"
+)
+if flag==guess:
+    st.write(f"Uhhhhhhhhhhhhh {flag=} og {guess=}")
+else:
+    st.write(f"Buuuuuuuuuuh {guess=} no gucci")
