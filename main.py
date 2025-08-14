@@ -146,7 +146,7 @@ def process_and_save(uploaded_file):
 
 if uploaded_files:
     for file in uploaded_files:  # <-- loop over each file
-        upload_to_drive(file):
+        upload_to_drive(file)
     #upload_to_drive(uploaded_files)
 
     st.success("Dine billeder er gemt! 📷")
